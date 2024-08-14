@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.*;  
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.*;
 
 class CreateLoginForm extends JFrame implements ActionListener  
 {  
@@ -87,8 +88,6 @@ class CreateLoginForm extends JFrame implements ActionListener
          
                     MainMenu page = new MainMenu(userValue);
                     page.setVisible(true);
-                
-                    //create a welcome label and set it to the new page
                     page.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
                 }
                 else

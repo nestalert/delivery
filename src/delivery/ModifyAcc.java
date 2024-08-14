@@ -266,13 +266,13 @@ public class ModifyAcc extends JFrame implements ActionListener
                 Connection connection;
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/userbase","root", "");
-                if(tpwd.getText().equals("(unchanged)")) //if the password actually was changed.
+                if(tpwd.getText().equals("(unchanged)")) //if the password wasn't changed.
                 {
                     passwd = hexpass;
                 }
                 else
                 {
-                    passwd = DigestUtils.sha256Hex(tpwd.getText()); //null passwords should not be allowed.
+                    passwd = DigestUtils.sha256Hex(tpwd.getText()); 
                 }
                 userName = tname.getText();
                 eml = temail.getText();
