@@ -15,9 +15,9 @@ import java.util.logging.Logger;
     public class MainMenu extends JFrame implements ActionListener  
     {
         JPanel mainPanel,kitchenPanel;
-        JButton b1,b2,b3;
+        JButton b1,b2;
         String userName,time;
-        JLabel clock;
+        JLabel clock,tutorial;
         JList restList;
         //constructor  
         public MainMenu(String UserValue)             
@@ -45,62 +45,81 @@ import java.util.logging.Logger;
             b2.addActionListener(this); 
 
         }  
-        @Override
-        public void actionPerformed(ActionEvent ae)     //pass action listener as a parameter  
-        {  
-            if(ae.getSource()==b1)
+    @Override
+    public void actionPerformed(ActionEvent ae)     //pass action listener as a parameter  
+    {  
+        if(ae.getSource()==b1)
+        {
+            ModifyAcc mod = new ModifyAcc(userName);
+        }
+        if(ae.getSource()==b2)
+        {
+            mainPanel.setVisible(false);
+            kitchenPanel = new JPanel();
+            add(kitchenPanel);
+            try
             {
-                ModifyAcc mod = new ModifyAcc(userName);
-            }
-            if(ae.getSource()==b2)
-            {
-                mainPanel.setVisible(false);
-                kitchenPanel = new JPanel();
-                add(kitchenPanel);
-                try
-                {
-                    Connection connection;
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/userbase","root", "");
-                    ResultSet resultSet;
-                    Statement statement;
-                    statement = connection.createStatement();
+                Connection connection;
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/userbase","root", "");
+                ResultSet resultSet;
+                Statement statement;
+                statement = connection.createStatement();
                     
-                    
-                    var sql = "SELECT COUNT(UID) FROM KITCHENS WHERE START_HOUR < '" 
+                var sql = "SELECT COUNT(UID) FROM KITCHENS WHERE START_HOUR < '" 
                             + time + "'AND END_HOUR > '" + time + "'";
-                    resultSet = statement.executeQuery(sql);
-                    resultSet.next();
-                    int no_of_rest = resultSet.getInt(1);
-                    sql = "SELECT USERS.UNAME,KITCHENS.* FROM KITCHENS,USERS WHERE START_HOUR < '" 
+                resultSet = statement.executeQuery(sql);
+                resultSet.next();
+                int no_of_rest = resultSet.getInt(1);
+                sql = "SELECT USERS.UNAME,KITCHENS.* FROM KITCHENS,USERS WHERE START_HOUR < '" 
                             + time + "'AND END_HOUR > '" + time + "' AND KITCHENS.UID = USERS.UID";
-                    resultSet = statement.executeQuery(sql);
-                    if(resultSet.next())
+                resultSet = statement.executeQuery(sql);
+                if(resultSet.next())
+                {
+                    int count = 0;
+                    String[] rest = new String[no_of_rest];
+                    do
                     {
-                        int count = 0;
-                        String[] rest = new String[no_of_rest];
-                        do
-                        {
-                            var temp = resultSet.getString(1) + "(Cuisine:" + resultSet.getString(3) + " Rating:" + resultSet.getFloat(5) + ")";
-                            rest[count] = temp;
-                            count++;    
-                        }while(resultSet.next());
+                        String temp = resultSet.getString(1) + "(Cuisine:" + resultSet.getString(3) + " Rating:" + resultSet.getFloat(5) + ")";
+                        rest[count] = temp;
+                        count++;    
+                    }while(resultSet.next());
                         
-                        restList = new JList(rest);
-                        restList.setVisible(true);
-                        b3 = new JButton("Select Restaurant");
-                        b3.setVisible(true);
-                        kitchenPanel.add(restList,BorderLayout.CENTER);
-                        kitchenPanel.add(b3,BorderLayout.CENTER);
-                    }
-                    else
+                    restList = new JList(rest);
+                    restList.setVisible(true);
+                    kitchenPanel.add(restList,BorderLayout.CENTER);
+                    tutorial = new JLabel("Double click on any of the available restaurants.");
+                    tutorial.setVisible(true);
+                    kitchenPanel.add(tutorial,BorderLayout.CENTER);
+                    restList.addMouseListener(new MouseAdapter() 
                     {
-                        JLabel badnews;
-                        badnews = new JLabel("No available kitchens at this time.");
-                        badnews.setVisible(true);
-                        kitchenPanel.add(badnews); 
-                    }
-                    kitchenPanel.setVisible(true);
+                        @Override
+                        public void mouseClicked(MouseEvent evt) 
+                        {
+                            if (evt.getClickCount() == 2) 
+                            {
+                                kitchenPanel.setVisible(false);
+                                mainPanel.setVisible(true);
+                                String selectedRest;
+                                selectedRest = restList.getSelectedValue().toString();
+                                int iend = selectedRest.indexOf("(");
+                                String restName = selectedRest.substring(0 , iend);
+                                SeeMenu menu = new SeeMenu(restName);   
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                JLabel badnews;
+                badnews = new JLabel("No available kitchens at this time.");
+                badnews.setVisible(true);
+                kitchenPanel.add(badnews); 
+                }
+                resultSet.close();
+                statement.close();
+                connection.close();
+                kitchenPanel.setVisible(true);
                 }
                 catch (SQLException | ClassNotFoundException ex) 
                 {
@@ -108,4 +127,5 @@ import java.util.logging.Logger;
                 }
             }
         }
-    }   
+    
+    }
