@@ -67,6 +67,7 @@ CREATE TABLE MENU
     MENU_ID INT,
     FOOD_NAME VARCHAR(50),
     FOOD_ALLERGENS VARCHAR(100), 
+    PRICE DECIMAL(10,2),
     PRIMARY KEY(UID, MENU_ID),
     FOREIGN KEY (UID) REFERENCES KITCHENS(UID) ON DELETE CASCADE
 );
@@ -110,13 +111,13 @@ INSERT INTO DELIVERERS (UID, VEHICLE_TYPE, DELIVERY_COUNT, AVERAGE_RATING, WORKI
     (6, 'Car', 200, 4.8, 'Suburbs', "14:00:00", "02:00:00");
 
 -- Insert sample data into MENU table for the kitchens
-INSERT INTO MENU (UID, MENU_ID, FOOD_NAME, FOOD_ALLERGENS) VALUES
-    (3, 1, "Pepperoni Pizza", NULL),
-    (3, 2, "Shrimp Pasta", "Shellfish"),
-    (3, 3, "Pine Nut Pizza", "Nuts"),
-    (4, 1, "Pork Souvlaki", "Onion"),
-    (4, 2, "Greek Salad", "Feta cheese"),
-    (4, 3, "French Fries", NULL);
+INSERT INTO MENU (UID, MENU_ID, FOOD_NAME, FOOD_ALLERGENS, PRICE) VALUES
+    (3, 1, "Pepperoni Pizza", NULL, 10.95),
+    (3, 2, "Shrimp Pasta", "Shellfish",15.95),
+    (3, 3, "Pine Nut Pizza", "Nuts",18.99),
+    (4, 1, "Pork Souvlaki", "Onion",3.60),
+    (4, 2, "Greek Salad", "Feta cheese",2.20),
+    (4, 3, "French Fries", NULL,1.50);
 
 -- Insert sample orders
 INSERT INTO ORDERS (CUSTOMER_ID, KITCHEN_ID, DELIVERER_ID, TOTAL_AMOUNT) VALUES

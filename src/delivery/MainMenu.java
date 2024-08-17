@@ -104,7 +104,7 @@ import java.util.logging.Logger;
                                 selectedRest = restList.getSelectedValue().toString();
                                 int iend = selectedRest.indexOf("(");
                                 String restName = selectedRest.substring(0 , iend);
-                                SeeMenu menu = new SeeMenu(restName);   
+                                SeeMenu menu = new SeeMenu(restName,userName);   
                             }
                         }
                     });

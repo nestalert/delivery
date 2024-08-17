@@ -294,7 +294,6 @@ public class ModifyAcc extends JFrame implements ActionListener
                 stmt.setString(5, rol);
                 stmt.setString(6, bnk);
                 stmt.setInt(7, uid);
-                System.out.println(stmt);
                 stmt.executeUpdate();
                 if(kitchen.isSelected())
                 {
@@ -303,7 +302,6 @@ public class ModifyAcc extends JFrame implements ActionListener
                 stmt.setString(1, thour_s.getText());
                 stmt.setString(2, thour_e.getText());
                 stmt.setInt(3, uid);
-                System.out.println(stmt);
                 stmt.executeUpdate();
                 }
                 if(deliverer.isSelected())
@@ -313,7 +311,6 @@ public class ModifyAcc extends JFrame implements ActionListener
                 stmt.setString(1, thour_s.getText());
                 stmt.setString(2, thour_e.getText());
                 stmt.setInt(3, uid);
-                System.out.println(stmt);
                 stmt.executeUpdate();
                 }
                 String data1;
