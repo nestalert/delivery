@@ -12,12 +12,14 @@ public class SeeMenu extends JFrame implements ActionListener
 {
     JPanel menuPanel,choicePanel,cartPanel;
     JSpinner quant;
-    JList foodStuff;
-    JLabel allergyStuff,spinnerLabel;
+    JList foodStuff,cart;
+    JLabel allergyStuff,spinnerLabel,finalPrice;
     JButton commit,bail,finalize;
-    JTextArea cart;
+   
+    DefaultListModel listModel;
     Float[] inPrice;
     float finPrice = 0;
+    String[] pureFood;
     
     public SeeMenu(String restName, String userName)
     {
@@ -51,6 +53,7 @@ public class SeeMenu extends JFrame implements ActionListener
             
             String food[] = new String[foodNum];
             String allergy[] = new String[foodNum];
+            pureFood = new String[foodNum];
             inPrice = new Float[foodNum];
             
             sql = "SELECT MENU.* FROM MENU,USERS WHERE MENU.UID = USERS.UID AND USERS.UNAME = '" + restName + "' ORDER BY MENU_ID ASC";
@@ -59,6 +62,7 @@ public class SeeMenu extends JFrame implements ActionListener
             int i;
             for(i=0; i<foodNum; i++)
             {
+                pureFood[i] = resultSet.getString(3);
                 food[i] = resultSet.getString(3) + ": " + resultSet.getFloat(5);
                 allergy[i] = resultSet.getString(4);
                 inPrice[i] = resultSet.getFloat(5);
@@ -79,7 +83,7 @@ public class SeeMenu extends JFrame implements ActionListener
             commit = new JButton("Add to cart");
             commit.setVisible(true);
             commit.addActionListener(this);
-            bail = new JButton("Clear cart");
+            bail = new JButton("Remove selected item");
             bail.setVisible(true);
             bail.addActionListener(this);
             finalize = new JButton("Complete order");
@@ -89,8 +93,12 @@ public class SeeMenu extends JFrame implements ActionListener
             spinnerLabel = new JLabel("No. of items:");
             spinnerLabel.setVisible(true);
             
-            cart = new JTextArea();
+            listModel = new DefaultListModel();
+            cart = new JList(listModel);
             cart.setVisible(true);
+            
+            finalPrice = new JLabel("Total cost: 0.00");
+            finalPrice.setVisible(true);
             
             foodStuff.addMouseListener(new MouseAdapter() 
             {
@@ -114,6 +122,7 @@ public class SeeMenu extends JFrame implements ActionListener
             choicePanel.add(finalize);
             
             cartPanel.add(cart);
+            cartPanel.add(finalPrice);
             
             menuPanel.setVisible(true);
             choicePanel.setVisible(true);
@@ -132,24 +141,29 @@ public class SeeMenu extends JFrame implements ActionListener
         String toList;
         int foodNo = 0;
         int quantNo;
-        if(ae.getSource()==commit)
+        int foodSpot;
+ 
+        if(ae.getSource()==commit && (!foodStuff.isSelectionEmpty()))
         {
             quantNo = (int) quant.getValue();
-            toList = quantNo + "x " + foodStuff.getSelectedValue() + "\n";
-            cart.setText(cart.getText() + toList);
+            foodSpot = (int) foodStuff.getSelectedIndex();
+            toList = quantNo + "x " + pureFood[foodSpot] + "\n";
+            listModel.addElement(toList);
             finPrice = finPrice + (quantNo*inPrice[foodStuff.getSelectedIndex()]);
-            System.out.println(finPrice);
+            finalPrice.setText("Total cost: "+ finPrice);
+            quant.setValue(1);
             foodNo++;
         }
-        if(ae.getSource()==bail)
+        if(ae.getSource()==bail && (!cart.isSelectionEmpty()))
         {
-            cart.setText(null);
-            foodNo = 0;
-            finPrice = 0;
+            quantNo = Integer.parseInt(cart.getSelectedValue().toString().substring(0,1));
+            foodNo--;
+            finPrice = finPrice - (quantNo*inPrice[cart.getSelectedIndex()]);
+            finalPrice.setText("Total cost: "+ finPrice);
+            listModel.remove(cart.getSelectedIndex());
         }
         if(ae.getSource()==finalize)
         {
-            
             try
             {
                 Connection connection;
