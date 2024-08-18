@@ -105,11 +105,8 @@ public class SeeMenu extends JFrame implements ActionListener
                 @Override
                 public void mouseClicked(MouseEvent evt) 
                 {
-                    if (evt.getClickCount() == 1) 
-                    {
-                        int foodNo = foodStuff.getSelectedIndex();
-                        allergyStuff.setText("Potential allergen: " + allergy[foodNo]);
-                    }
+                    int foodNo = foodStuff.getSelectedIndex();
+                    allergyStuff.setText("Potential allergen: " + allergy[foodNo]);
                 }
             });
             menuPanel.add(foodStuff);
