@@ -13,12 +13,12 @@ public class SeeMenu extends JFrame implements ActionListener
     JPanel menuPanel,choicePanel,cartPanel;
     JSpinner quant;
     JList foodStuff,cart;
-    JLabel allergyStuff,spinnerLabel,finalPrice;
+    JLabel allergyStuff,spinnerLabel,finalPriceLabel;
     JButton commit,bail,finalize;
    
     DefaultListModel listModel;
     Float[] inPrice;
-    float finPrice = 0;
+    float finalPrice = 0;
     String[] pureFood;
     
     public SeeMenu(String restName, String userName)
@@ -80,10 +80,10 @@ public class SeeMenu extends JFrame implements ActionListener
             allergyStuff = new JLabel("Potential allergen: None");
             allergyStuff.setVisible(true);
             
-            commit = new JButton("Add to cart");
+            commit = new JButton("Add to cart (↑)");
             commit.setVisible(true);
             commit.addActionListener(this);
-            bail = new JButton("Remove selected item");
+            bail = new JButton("Remove selected item (↓)");
             bail.setVisible(true);
             bail.addActionListener(this);
             finalize = new JButton("Complete order");
@@ -97,8 +97,8 @@ public class SeeMenu extends JFrame implements ActionListener
             cart = new JList(listModel);
             cart.setVisible(true);
             
-            finalPrice = new JLabel("Total cost: 0.00");
-            finalPrice.setVisible(true);
+            finalPriceLabel = new JLabel("Total cost: 0.00");
+            finalPriceLabel.setVisible(true);
             
             foodStuff.addMouseListener(new MouseAdapter() 
             {
@@ -119,7 +119,7 @@ public class SeeMenu extends JFrame implements ActionListener
             choicePanel.add(finalize);
             
             cartPanel.add(cart);
-            cartPanel.add(finalPrice);
+            cartPanel.add(finalPriceLabel);
             
             menuPanel.setVisible(true);
             choicePanel.setVisible(true);
@@ -139,24 +139,28 @@ public class SeeMenu extends JFrame implements ActionListener
         int foodNo = 0;
         int quantNo;
         int foodSpot;
- 
+        Float tempPrice;
         if(ae.getSource()==commit && (!foodStuff.isSelectionEmpty()))
         {
             quantNo = (int) quant.getValue();
             foodSpot = (int) foodStuff.getSelectedIndex();
-            toList = quantNo + "x " + pureFood[foodSpot] + "\n";
+            tempPrice = quantNo*inPrice[foodStuff.getSelectedIndex()];
+            finalPrice = finalPrice + tempPrice;
+            toList = quantNo + "x " + pureFood[foodSpot] + ":" + tempPrice + "\n";
             listModel.addElement(toList);
-            finPrice = finPrice + (quantNo*inPrice[foodStuff.getSelectedIndex()]);
-            finalPrice.setText("Total cost: "+ finPrice);
+            finalPriceLabel.setText("Total cost: "+ finalPrice);
             quant.setValue(1);
             foodNo++;
         }
         if(ae.getSource()==bail && (!cart.isSelectionEmpty()))
         {
-            quantNo = Integer.parseInt(cart.getSelectedValue().toString().substring(0,1));
             foodNo--;
-            finPrice = finPrice - (quantNo*inPrice[cart.getSelectedIndex()]);
-            finalPrice.setText("Total cost: "+ finPrice);
+            String selectedCart;
+            selectedCart = cart.getSelectedValue().toString();
+            int iend = selectedCart.indexOf(":"); //get the value of the item from the end of the line.
+            Float removePrice = Float.valueOf(selectedCart.substring(iend + 1));
+            finalPrice = finalPrice - removePrice;
+            finalPriceLabel.setText("Total cost: "+ finalPrice);
             listModel.remove(cart.getSelectedIndex());
         }
         if(ae.getSource()==finalize)
